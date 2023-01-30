@@ -1,0 +1,6 @@
+set mem inaccessible-by-default off
+target ext /dev/ttyBmpGdb
+mon deb en
+mon tpwr en
+mon swd
+attach 1
