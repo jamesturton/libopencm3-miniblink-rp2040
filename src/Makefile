@@ -1,13 +1,15 @@
 PROJECT = rp2040-blink
-BUILD_DIR = bin
 
 CFILES = main.c
 AFILES += boot2.S
 
-DEVICE=rp2040
+CPPFLAGS = -DRP2040_FLASH_GENERIC_03H
 
-OPENCM3_DIR=../../../libopencm3
+LDSCRIPT = ../rp2040.ld
+# LDSCRIPT = $(OPENCM3_DIR)/lib/rp2040/libopencm3_rp2040.ld
+LIBNAME = opencm3_rp2040
 
-include $(OPENCM3_DIR)/mk/genlink-config.mk
+FP_FLAGS	?= -msoft-float
+ARCH_FLAGS	= -mcpu=cortex-m0plus $(FP_FLAGS)
+
 include ../rules.mk
-include $(OPENCM3_DIR)/mk/genlink-rules.mk
