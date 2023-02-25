@@ -1,13 +1,11 @@
 #include <libopencm3/rp2040/gpio.h>
 #include <libopencm3/rp2040/runtime.h>
-#include <libopencm3/rp2040/resets.h>
 
 #define PIN_LED GPIO13
 
 int main(void)
 {
 	runtime_init();
-	// unreset_block_wait(RESETS_RESET_PADS_QSPI | RESETS_RESET_IO_BANK0);
 
 	int i, j;
 	i = j = 0;

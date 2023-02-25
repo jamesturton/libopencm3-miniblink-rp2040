@@ -1,4 +1,7 @@
-bin/
 *.elf
 *.bin
-generated.*.ld
+*.o
+*.d
+*.map
+*.uf2
+.gdbinit
