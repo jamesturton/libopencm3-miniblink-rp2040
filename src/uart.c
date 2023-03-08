@@ -2,12 +2,16 @@
 #include <libopencm3/rp2040/uart.h>
 #include <libopencm3/rp2040/runtime.h>
 
+#define PIN_LED     GPIO13
 #define PIN_UART_TX GPIO0
 #define PIN_UART_RX GPIO1
 
 int main(void)
 {
 	runtime_init();
+
+    gpio_init(PIN_LED);
+    gpio_set_dir(PIN_LED, GPIO_DIR_OUT);
 
 	gpio_set_func(PIN_UART_TX, GPIO_FUNC_UART);
 	gpio_set_func(PIN_UART_RX, GPIO_FUNC_UART);
@@ -23,8 +27,10 @@ int main(void)
 
 	while (1)
 	{
-		rx = uart_recv_blocking(UART0);
-		uart_send_blocking(UART0, rx);
+		gpio_toggle(PIN_LED);
+
+		// rx = uart_recv_blocking(UART0);
+		// uart_send_blocking(UART0, rx);
 	}
 
 	return 0;

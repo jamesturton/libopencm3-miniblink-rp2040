@@ -38,6 +38,7 @@ AS		:= $(PREFIX)as
 OBJCOPY		:= $(PREFIX)objcopy
 OBJDUMP		:= $(PREFIX)objdump
 GDB		:= $(PREFIX)gdb
+ELF2UF2		= $(shell which elf2uf2)
 STFLASH		= $(shell which st-flash)
 STYLECHECK	:= /checkpatch.pl
 STYLECHECKFLAGS	:= --no-tree -f --terse --mailback
@@ -142,21 +143,23 @@ LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 ###############################################################################
 ###############################################################################
 
-.SUFFIXES: .elf .bin .hex .srec .list .map .images
+.SUFFIXES: .uf2 .elf .bin .hex .srec .list .map .images
 .SECONDEXPANSION:
 .SECONDARY:
 
-all: elf
+all: uf2
 
+uf2: $(PROJECT).uf2
 elf: $(PROJECT).elf
 bin: $(PROJECT).bin
 hex: $(PROJECT).hex
 srec: $(PROJECT).srec
 list: $(PROJECT).list
-GENERATED_BINARIES=$(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).srec $(PROJECT).list $(PROJECT).map
+GENERATED_BINARIES=$(PROJECT).uf2 $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).srec $(PROJECT).list $(PROJECT).map
 
 images: $(PROJECT).images
 flash: $(PROJECT).flash
+uf2-flash: $(PROJECT).uf2-flash
 
 # Either verify the user provided LDSCRIPT exists, or generate it.
 ifeq ($(strip $(DEVICE)),)
@@ -183,6 +186,10 @@ print-%:
 
 %.images: %.bin %.hex %.srec %.list %.map
 	@#printf "*** $* images generated ***\n"
+
+%.uf2: %.elf
+	@#printf "  ELF2UF2 $(*).uf2\n"
+	$(Q)$(ELF2UF2) $(*).elf $(*).uf2
 
 %.bin: %.elf
 	@#printf "  OBJCOPY $(*).bin\n"
@@ -240,6 +247,12 @@ styleclean: $(STYLECHECKFILES:=.styleclean)
 	@printf "  FLASH  $<\n"
 	$(STFLASH) write $(*).bin 0x8000000
 
+%.uf2-flash: %.uf2
+	@printf "  FLASH  $<\n"
+	mkdir -p /tmp/uf2
+	mount /dev/sd*1 /tmp/uf2
+	cp $(*).uf2 /tmp/uf2/
+
 ifeq ($(BMP_PORT),)
 ifeq ($(OOCD_FILE),)
 %.flash: %.elf
@@ -262,7 +275,7 @@ else
 	@printf "  GDB   $(*).elf (flash)\n"
 	$(GDB) --batch \
 		   -ex 'target extended-remote $(BMP_PORT)' \
-		   -x $(EXAMPLES_SCRIPT_DIR)/black_magic_probe_flash.scr \
+		   -x ../black_magic_probe_flash.scr \
 		   $(*).elf
 endif
 
