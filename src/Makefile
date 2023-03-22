@@ -1,8 +1,9 @@
 PROJECT = rp2040-blink
 
 # CFILES = main.c
-CFILES = uart.c
-# CFILES = cdcacm.c
+# CFILES = uart.c
+CFILES = cdcacm.c
+# CFILES = msc.c ramdisk.c
 
 LDSCRIPT = $(OPENCM3_DIR)/lib/rp2040/libopencm3_rp2040.ld
 LIBNAME = opencm3_rp2040

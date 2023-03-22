@@ -29,8 +29,8 @@ int main(void)
 	{
 		gpio_toggle(PIN_LED);
 
-		// rx = uart_recv_blocking(UART0);
-		// uart_send_blocking(UART0, rx);
+		rx = uart_recv_blocking(UART0);
+		uart_send_blocking(UART0, rx);
 	}
 
 	return 0;
